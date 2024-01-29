@@ -1,6 +1,7 @@
 # 감성 일기장 만들기
 
-본 프로젝트는 ["한입 크기로 잘라 먹는 리액트 강의"](https://www.udemy.com/course/winterlood-react-basic/)의 "감성 일기장 만들어 보기"를 클론한 프로젝트로 "리액트"의 기초 지식을 학습하는 것을 목표하였습니다.
+본 프로젝트는 ["한입 크기로 잘라 먹는 리액트 강의"](https://www.udemy.com/course/winterlood-react-basic/)의 "감성 일기장 만들어 보기"를 클론한 프로젝트로 "리액트"의
+기초 지식을 학습하는 것을 목표하였습니다.
 
 <br>
 
@@ -8,6 +9,7 @@
 
 1. [페이지 라우팅 - React SPA & CSR](#1-페이지-라우팅---react-spa--csr)
 2. [페이지 라우팅 - React Router 기본](#2-페이지-라우팅---react-router-기본)
+3. [페이지 라우팅 - React Router 응용](#3-페이지-라우팅---react-router-응용)
 
 <br>
 <br>
@@ -111,12 +113,12 @@ $ npm install react-router-dom@(버전)
 // src/pages/Home.js
 
 const Home = () => {
-    return (
-        <div>
-            <h1>Home</h1>
-            <p>이곳은 홈 입니다.</p>
-        </div>
-    );
+  return (
+    <div>
+      <h1>Home</h1>
+      <p>이곳은 홈 입니다.</p>
+    </div>
+  );
 };
 
 export default Home;
@@ -135,7 +137,7 @@ export default Home;
 ```jsx
 // src/App.js
 
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 import Home from "./pages/Home";
 import New from "./pages/New";
@@ -154,15 +156,15 @@ import Diary from "./pages/Diary";
 // src/App.js
 
 return (
-    <BrowserRouter>
-        <div className="App">
-            <h2>App.js</h2>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/new" element={<New />} />
-            </Routes>
-        </div>
-    </BrowserRouter>
+  <BrowserRouter>
+    <div className="App">
+      <h2>App.js</h2>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/new" element={<New/>}/>
+      </Routes>
+    </div>
+  </BrowserRouter>
 );
 ```
 
@@ -212,20 +214,20 @@ return (
 ```jsx
 // src/components/RouterTest.js
 
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 const RouteTest = () => {
-    return (
-        <div>
-            <Link to={"/"}>HOME</Link>
-            <br />
-            <Link to={"/diary"}>DIARY</Link>
-            <br />
-            <Link to={"/new"}>NEW</Link>
-            <br />
-            <Link to={"/edit"}>EDIT</Link>
-        </div>
-    );
+  return (
+    <div>
+      <Link to={"/"}>HOME</Link>
+      <br/>
+      <Link to={"/diary"}>DIARY</Link>
+      <br/>
+      <Link to={"/new"}>NEW</Link>
+      <br/>
+      <Link to={"/edit"}>EDIT</Link>
+    </div>
+  );
 };
 
 export default RouteTest;
@@ -243,16 +245,16 @@ export default RouteTest;
 import RouteTest from "./components/RouteTest";
 
 <BrowserRouter>
-    <div className="App">
-        <h2>App.js</h2>
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/new" element={<New />} />
-            <Route path="/edit" element={<Edit />} />
-            <Route path="/diary" element={<Diary />} />
-        </Routes>
-        <RouteTest />
-    </div>
+  <div className="App">
+    <h2>App.js</h2>
+    <Routes>
+      <Route path="/" element={<Home/>}/>
+      <Route path="/new" element={<New/>}/>
+      <Route path="/edit" element={<Edit/>}/>
+      <Route path="/diary" element={<Diary/>}/>
+    </Routes>
+    <RouteTest/>
+  </div>
 </BrowserRouter>
 ```
 
@@ -269,3 +271,167 @@ import RouteTest from "./components/RouteTest";
 
 <br>
 <br>
+
+## 3. 페이지 라우팅 - React Router 응용
+
+### 3-1. 학습목표
+
+- `useParams` : Path Variable(경로 변수)
+- `useSearchParams` : Query String(url로 데이터 전달)
+- `useNavigate` : Page Moving(Link가 아닌 함수로 페이지 이동)
+
+<br>
+
+### 3-2. Path Variable & useParams
+
+### - Diary 페이지
+
+- 경로 : '/diary'
+- 특징 : 특정 일기의 상세 페이지로서 어떤 일기를 보여주어야 할 지 전달 받아야함
+- ex) /diary/1 -> 1번 일기
+
+<br>
+
+### - Path Variable
+
+```jsx
+// App.js
+
+<BrowserRouter>
+  <div className="App">
+    <h2>App.js</h2>
+    <Routes>
+      <Route path="/" element={<Home/>}/>
+      <Route path="/new" element={<New/>}/>
+      <Route path="/edit" element={<Edit/>}/>
+      <Route path="/diary/:id" element={<Diary/>}/>
+    </Routes>
+    <RouterTest/>
+  </div>
+</BrowserRouter>
+```
+
+- diary 경로 뒤에 `:id`를 포함시킴
+- 각 id 값에 따라서 diary 경로를 분배시킴
+
+<br>
+
+### - useParams
+
+```jsx
+// pages/Diary.js
+
+import {useParams} from "react-router-dom";
+
+const Diary = () => {
+  const {id} = useParams();
+  console.log(id);
+};
+```
+
+- React 자체에서가 아닌 라이브러리에서 제공하는 `커스텀 Hooks`인 `useParams` 가져오기
+- id 값을 useParams로 설정하면 해당 id 값을 Diary 페이지에서 이용할 수 있음
+
+<br>
+
+![useParams](README_img/React_useParams.gif)
+
+<useParams로 가져온 id 값을 콘솔로 출력하기>
+
+<br>
+
+### 3-3. Query String & useSearchParams
+
+### - Query String
+
+```
+- Query 전달 예시
+
+URL : https://site.com/edit?id=10&mode=dark
+```
+
+- `Query` : 웹 페이지에서 데이터를 전달하는 가장 간단한 방법
+- `Query String` : url에서 물음표 키워드('?') 뒤에 전달되는 데이터
+    - `name=value`의 형태로 '&'를 사용하여 여러 데이터를 묶음
+
+<br>
+
+### - Query String은 path 설정 안함
+
+- 앞선 `Path Variable`의 경우, `/diary/:id`와 같이 받을 Path Variable을 경로에 설정해주었음
+- 반면, `Query String`의 경우, 경로에 별도의 설정을 하지 않아도 됨
+
+<br>
+
+### - useSearchParams
+
+```jsx
+// pages/Edit.js
+
+import {useSearchParams} from "react-router-dom";
+
+const Edit = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const id = searchParams.get('id');
+  console.log('id : ', id);
+
+  const mode = searchParams.get('mode');
+  console.log('mode : ', mode);
+
+...
+  <button onClick={() => {
+    setSearchParams({who: '조정곤'})
+  }}>QS 바꾸기
+  </button>
+};
+```
+
+- `useSearchParams` : 커스텀 Hooks 중 하나로 useState와 유사하게 비구조화 할당을 통해 `searchParams`와 `setSearchParams`를 받음
+- `searchParams` : 전달받은 Query String이 객체로 담겨 있으며, `.get()` 메서드를 통해 데이터 값을 가져올 수 있음
+- `setSearchParams` : searchParams `객체를 업데이트`하는 함수
+
+<br>
+
+![useSearchParams 예시](README_img/React_useSearchParams.gif)
+
+<useSearchParams로 가져온 Query String 값을 콘솔로 출력하고 버튼으로 searchParams 업데이트>
+
+<br>
+
+### 3-4. Page Moving & useNavigate
+
+### - useNavigate
+
+```jsx
+// pages/Edit.js
+
+import {useNavigate, useSearchParams} from "react-router-dom";
+
+const Edit = () => {
+  const navigate = useNavigate();
+
+...
+  // 경로 페이지로 이동
+  <button onClick={() => {
+    navigate('/home')
+  }}>HOME으로 가기
+  </button>
+
+  // 해당 숫자만큼 뒤로가기
+  <button onClick={() => {
+    navigate(-1)
+  }}>뒤로가기
+  </button>
+}
+```
+
+- `useNavigate` : 커스텀 Hooks 중 하나로, `페이지를 이동할 수 있는 함수`를 반환함, 따라서 이 함수를 navigate라는 변수에 할당
+- 버튼 onClick의 콜백함수에 navigate 함수를 넣고 `인자로 경로`를 받으면 버튼 클릭 시, 해당 페이지로 이동함
+- 경로 대신 `-(숫자)`를 넣게 되면 숫자만큼 `뒤로가기` 수행
+
+<br>
+
+![페이지 이동 및 뒤로가기](README_img/React_useNavigate.gif)
+
+<useNavigate를 사용하여 페이지 이동 및 뒤로가기>
