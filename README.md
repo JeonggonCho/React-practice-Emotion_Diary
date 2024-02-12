@@ -10,6 +10,7 @@
 1. [페이지 라우팅 - React SPA & CSR](#1-페이지-라우팅---react-spa--csr)
 2. [페이지 라우팅 - React Router 기본](#2-페이지-라우팅---react-router-기본)
 3. [페이지 라우팅 - React Router 응용](#3-페이지-라우팅---react-router-응용)
+4. [프로젝트 기초공사 1](#4-프로젝트-기초공사-1)
 
 <br>
 <br>
@@ -67,7 +68,7 @@
 
 ### 1-3. CSR (Client Side Rendering)
 
-- SPA 방식과 같이 `클라이언트 측`에서 `화면을 렌더링`하는 것
+- `클라이언트 측`에서 `화면을 렌더링`하는 것
 
 <br>
 <br>
@@ -435,3 +436,313 @@ const Edit = () => {
 ![페이지 이동 및 뒤로가기](README_img/React_useNavigate.gif)
 
 <useNavigate를 사용하여 페이지 이동 및 뒤로가기>
+
+<br>
+<br>
+
+## 4. 프로젝트 기초공사 1
+
+### 4-1. 세팅 항목
+
+- 폰트 세팅 : Google Web Fonts 이용
+- 레이아웃 세팅 : 모든 페이지에 반영되는 레이아웃 세팅
+- 이미지 에셋 세팅 : 감정 표현 이미지들을 프로젝트에서 불러와 사용할 수 있도록 환경 세팅
+- 공통 컴포넌트 세팅 : 모든 페이지에 공통으로 사용되는 버튼, 헤더 컴포넌트 세팅
+
+<br>
+
+### 4-2. 폰트 세팅
+
+- [Google Web Font](https://fonts.google.com/) 사이트에서 사용할 폰트를 찾아 select하기
+- `@import...` 구문을 App.css 파일 상단에 붙여넣기
+- css로 font-family 속성 추가
+
+```css
+/*src/App.css*/
+
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Noto+Sans+KR&display=swap');
+
+.App {
+    padding: 20px;
+    font-family: 'Nanum Gothic', sans-serif;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+```
+
+<br>
+
+### 4-3. 레이아웃 세팅
+
+- 모든 페이지에 반영되는 레이아웃 세팅
+
+```css
+/*src/App.css*/
+
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&family=Noto+Sans+KR&display=swap');
+
+
+body {
+    background-color: #f6f6f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Nanum Gothic', sans-serif;
+    min-height: 100vh;
+    margin: 0px;
+}
+
+@media (min-width: 650px) {
+    .App {
+        width: 640px;
+    }
+}
+
+@media (max-width: 650px) {
+    .App {
+        width: 90vw;
+    }
+}
+
+#root {
+    background-color: white;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.App {
+    min-height: 100vh;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+```
+
+- 기본적인 레이아웃 세팅 진행
+
+<br>
+
+### 4-4. 이미지 에셋 세팅
+
+- 감정 표현 이미지 종류 5가지 (기분 최고, 좋음, 그럭저럭, 나쁨, 끔찍함)
+- 해당 이미지 파일 `public/assets`에 담기
+
+| <img src="emotion-diary/public/assets/emotion1.png" width="50px"> | <img src="emotion-diary/public/assets/emotion2.png" width="50px"> | <img src="emotion-diary/public/assets/emotion3.png" width="50px"> | <img src="emotion-diary/public/assets/emotion4.png" width="50px"> | <img src="emotion-diary/public/assets/emotion5.png" width="50px"> |
+|:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|:-----------------------------------------------------------------:|
+|                               기분 최고                               |                                좋음                                 |                               그럭저럭                                |                                나쁨                                 |                                끔찍함                                |
+
+<br>
+
+```tsx
+// src/pages/App.js
+
+...
+return (
+    <BrowserRouter>
+        <div className="App">
+            <h2>App.js</h2>
+            <img src={process.env.PUBLIC_URL + `/assets/emotion1.png`} width="60px"/>
+            <Routes>
+                <Route path="/" element={<Home/>}/>
+                <Route path="/new" element={<New/>}/>
+                <Route path="/edit" element={<Edit/>}/>
+                <Route path="/diary/:id" element={<Diary/>}/>
+            </Routes>
+        </div>
+    </BrowserRouter>
+);
+```
+
+<br>
+
+### - process.env.PUBLIC_URL
+
+- 해당 URL은 어디에 있던지 무조건 `public 디렉토리`를 나타냄
+
+```tsx
+<img src={process.env.PUBLIC_URL + `/assets/emotion1.png`} width="60px"/>
+```
+
+- 따라서 위 이미지 컴포넌트의 해당 경로는 `public/assets/emotion1.png`를 가리킴
+- 만약 경로가 public으로 연결되지 않을 경우, 아래와 같이 초기화 진행
+
+```tsx
+// src/pages/App.js
+
+function App() {
+    const env = process.env;
+    env.PUBLIC_URL = env.PUBLIC_URL || "";
+...
+```
+
+<br>
+
+### 4-5. 공통 컴포넌트 세팅
+
+- 모든 페이지에 공통으로 사용되는 버튼, 헤더 컴포넌트 세팅
+- UI 요소가 `어떤 기준`으로 `얼마만큼 변화`하게 되는가를 `패턴화`하는 과정이 필요
+
+<br>
+
+### - 버튼 컴포넌트 만들기
+
+![버튼 컴포넌트](README_img/button_components.png)
+
+- 버튼 컴포넌트 생성
+- props로 text, type, onClick을 받음
+- btnType 변수를 통해 props로 받은 type 값이 'positive', 'negative' 둘 중 하나이면 그대로 사용하고 이상한 값이면, default로 변환하기
+- 버튼 색상은 type에 따라 동적으로 변화시키기 위해 `${}` 사용
+- 아무런 type이 전달 안 될 경우를 대비하여 `defaultProps`로 type에 default를 넣기
+
+```tsx
+// src/components/MyButton.js
+
+const MyButton = ({text, type, onClick}) => {
+    const btnType = ["positive", "negative"].includes(type) ? type : "default";
+
+    return (
+        <button
+            className={["MyButton", `MyButton_${btnType}`].join(" ")}
+            onClick={onClick}>
+            {text}
+        </button>
+    )
+}
+
+MyButton.defaultProps = {
+    type: "default",
+}
+
+export default MyButton;
+```
+
+- App에 버튼 생성하고 Props 전달하기
+- onClick으로 alert 띄우기
+
+```tsx
+// src/pages/App.js
+
+...
+<MyButton
+    text={"버튼"}
+    onClick={() => alert("버튼 클릭")}
+    type={"positive"}/>
+<MyButton
+    text={"버튼"}
+    onClick={() => alert("버튼 클릭")}
+    type={"negative"}/>
+<MyButton
+    text={"버튼"}
+    onClick={() => alert("버튼 클릭")}
+    type={"default"}/>
+...
+```
+
+- css 스타일링
+
+```css
+/*src/pages/App.css*/
+
+/* MyButton */
+
+.MyButton {
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 20px;
+    padding-left: 20px;
+    font-size: 18px;
+    white-space: nowrap;
+    font-family: 'Nanum Gothic';
+}
+
+.MyButton_default {
+    background-color: #ececec;
+    color: black;
+}
+
+.MyButton_positive {
+    background-color: #64c964;
+    color: white;
+}
+
+.MyButton_negative {
+    background-color: #fd565f;
+    color: white;
+}
+```
+
+<br>
+
+### - 헤더 컴포넌트 만들기
+
+![헤더 컴포넌트](README_img/header_component.png)
+
+- 헤더 컴포넌트 생성
+
+```tsx
+// src/components/MyHeader.js
+
+const MyHeader = ({headText, leftChild, rightChild}) => {
+    return <header>
+        <div className="head_btn_left">{leftChild}</div>
+        <div className="head_text">{headText}</div>
+        <div className="head_btn_right">{rightChild}</div>
+    </header>
+}
+
+export default MyHeader;
+```
+
+- App.js에 적용
+
+```tsx
+// src/pages/App.js
+
+...
+<MyHeader
+    headText={"App"}
+    leftChild={<MyButton text={"왼쪽 버튼"} onClick={() => alert("왼쪽 클릭")}/>}
+    rightChild={<MyButton text={"오른쪽 버튼"} onClick={() => alert("오른쪽 클릭")}/>}
+/>
+...
+```
+
+- css 스타일링
+
+```css
+/*src/pages/App.css*/
+
+/* HEADER */
+
+header {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e2e2e2;
+}
+
+header > div {
+    display: flex;
+}
+
+header .head_text {
+    width: 50%;
+    font-size: 25px;
+    justify-content: center;
+}
+
+header .head_btn_left {
+    width: 25%;
+    justify-content: start;
+}
+
+header .head_btn_right {
+    width: 25%;
+    justify-content: end;
+}
+
+header button {
+    font-family: 'Nanum Gothic', sans-serif;
+}
+```
