@@ -11,6 +11,7 @@
 2. [페이지 라우팅 - React Router 기본](#2-페이지-라우팅---react-router-기본)
 3. [페이지 라우팅 - React Router 응용](#3-페이지-라우팅---react-router-응용)
 4. [프로젝트 기초공사 1](#4-프로젝트-기초공사-1)
+5. [프로젝트 기초공사 2](#5-프로젝트-기초공사-2)
 
 <br>
 <br>
@@ -745,4 +746,216 @@ header .head_btn_right {
 header button {
     font-family: 'Nanum Gothic', sans-serif;
 }
+```
+
+<br>
+<br>
+
+## 5. 프로젝트 기초공사 2
+
+### 5-1. 세팅 항목
+
+- 상태 관리 세팅하기 : 프로젝트 전반적으로 사용될 일기 데이터 State 관리 로직 작성하기
+- 프로젝트 State Context 세팅하기 : 일기 데이터 State를 공급할 Context를 생성하고 Provider로 공급하기
+- 프로젝트 Dispatch Context 세팅하기 : 일기 데이터 State의 Dispatch 함수들을 공급할 Context를 생성하고 Provider로 공급하기
+
+<br>
+
+### 5-2. 상태 관리 세팅하기
+
+![구조](README_img/project_structure.png)
+
+- App 컴포넌트가 routes로 4개의 페이지를 자식요소로 가짐
+- URL에 따라서 페이지를 보여줌
+  - `/` : Home
+  - `/new` : New
+  - `/edit` : Edit
+  - `/diary` : Diary
+
+<br>
+
+### 5-3. 상태 관리 세팅하기
+
+- `일기 데이터`는 `생성`, `삭제`, `수정`의 상태 변화 함수가 필요함
+- data(일기)를 관리하는 여러 상태 변화 함수를 관리하기 위해 `useReducer` 사용
+
+<br>
+
+```javascript
+// src/pages/App.js
+
+import React, {useReducer, useRef} from "react";
+
+...
+function App() {
+  const [data, dispatch] = useReducer(reducer, []);
+...
+}
+```
+
+<br>
+
+- reducer 함수로 분기처리하기
+- 
+
+```javascript
+// src/pages/App.js
+
+...
+const reducer = (state, action) => {
+  let newState = [];
+  switch (action.type) {
+    case 'INIT': {
+      return action.data;
+    }
+    case 'CREATE': {
+      const newItem = {
+        ...action.data
+      };
+      newState = [newItem, ...state];
+      break;
+    }
+    case 'REMOVE': {
+      newState = state.filter((it) => it.id !== action.targetId);
+      break;
+    }
+    case 'EDIT': {
+      newState = state.map((it) =>
+              it.id === action.data.id ? {...action.data} : it
+      );
+      break;
+    }
+    default:
+      return state;
+  }
+  return newState;
+};
+...
+```
+
+- dispatch를 호출한 action 객체의 타입이 `INIT`일 경우, 객체의 데이터 반환
+- 생성인 `CREATE`일 경우, newItem을 newState 배열에 담아 생성
+- 삭제인 `REMOVE`일 경우, 최신 상태 state에서 action 객체의 targetId와 다른 데이터만 모은 새로운 배열 newState를 생성
+- 수정인 `EDIT`의 경우, 최신 state에서 action 객체의 id와 같을 경우, action의 data를 덮어씌우고, 다르면 그대로인 배열 newState를 생성
+- 최종적으로 newState 반환
+
+<br>
+
+- dispatch 호출 함수 생성하기
+
+```javascript
+// src/pages/App.js
+
+...
+function App() {
+
+  const [data, dispatch] = useReducer(reducer, []);
+
+  const dataId = useRef(0);
+
+  // CREATE
+  const onCreate = (date, content, emotion) => {
+    dispatch({
+      type: "CREATE",
+      data: {
+        id: dataId.current,
+        date: new Date(date).getTime(),
+        content,
+        emotion,
+      }
+    });
+    dataId.current += 1;
+  };
+
+  // REMOVE
+  const onRemove = (targetId) => {
+    dispatch({
+      type: "REMOVE",
+      targetId,
+    });
+  };
+
+  // EDIT
+  const onEdit = (targetId, date, content, emotion) => {
+    dispatch({
+      type: "EDIT",
+      data: {
+        id: targetId,
+        date: new Date(date).getTime(),
+        content,
+        emotion,
+      }
+    });
+  };
+...
+```
+
+<br>
+
+### 5-4. 프로젝트 State Context 세팅하기
+
+- context 생성 및 Provider 컴포넌트로 공급하기
+
+```javascript
+// src/pages/App.js
+
+...
+export const DiaryStateContext = React.createContext();
+...
+
+<DiaryStateContext.Provider value={data}>
+  
+    <BrowserRouter>
+      <div className="App">
+        <h2>App.js</h2>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/new" element={<New/>}/>
+          <Route path="/edit" element={<Edit/>}/>
+          <Route path="/diary/:id" element={<Diary/>}/>
+        </Routes>
+      </div>
+    </BrowserRouter>
+  
+</DiaryStateContext.Provider>
+```
+
+<br>
+
+### 5-5. 프로젝트 Dispatch Context 세팅하기
+
+- context 생성 및 Provider 컴포넌트로 공급하기
+
+```javascript
+// src/pages/App.js
+
+...
+export const DiaryDispatchContext = React.createContext();
+...
+
+<DiaryStateContext.Provider value={data}>
+  
+  <DiaryDispatchContext.Provider
+          value={{
+            onCreate,
+            onRemove,
+            onEdit
+          }}
+  >
+    
+    <BrowserRouter>
+      <div className="App">
+        <h2>App.js</h2>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/new" element={<New/>}/>
+          <Route path="/edit" element={<Edit/>}/>
+          <Route path="/diary/:id" element={<Diary/>}/>
+        </Routes>
+      </div>
+    </BrowserRouter>
+    
+  </DiaryDispatchContext.Provider>
+  
+</DiaryStateContext.Provider>
 ```
