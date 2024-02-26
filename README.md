@@ -796,7 +796,11 @@ function App() {
 <br>
 
 - reducer 함수로 분기처리하기
-- 
+- dispatch를 호출한 action 객체의 타입이 `INIT`일 경우, 객체의 데이터 반환
+- 생성인 `CREATE`일 경우, newItem을 newState 배열에 담아 생성
+- 삭제인 `REMOVE`일 경우, 최신 상태 state에서 action 객체의 targetId와 다른 데이터만 모은 새로운 배열 newState를 생성
+- 수정인 `EDIT`의 경우, 최신 state에서 action 객체의 id와 같을 경우, action의 data를 덮어씌우고, 다르면 그대로인 배열 newState를 생성
+- 최종적으로 newState 반환
 
 ```javascript
 // src/pages/App.js
@@ -833,15 +837,7 @@ const reducer = (state, action) => {
 ...
 ```
 
-- dispatch를 호출한 action 객체의 타입이 `INIT`일 경우, 객체의 데이터 반환
-- 생성인 `CREATE`일 경우, newItem을 newState 배열에 담아 생성
-- 삭제인 `REMOVE`일 경우, 최신 상태 state에서 action 객체의 targetId와 다른 데이터만 모은 새로운 배열 newState를 생성
-- 수정인 `EDIT`의 경우, 최신 state에서 action 객체의 id와 같을 경우, action의 data를 덮어씌우고, 다르면 그대로인 배열 newState를 생성
-- 최종적으로 newState 반환
-
 <br>
-
-- dispatch 호출 함수 생성하기
 
 ```javascript
 // src/pages/App.js
@@ -889,6 +885,8 @@ function App() {
   };
 ...
 ```
+
+- dispatch 호출 함수 생성하기
 
 <br>
 
@@ -959,3 +957,22 @@ export const DiaryDispatchContext = React.createContext();
   
 </DiaryStateContext.Provider>
 ```
+
+<br/>
+<br/>
+
+## 6. 페이지 구현
+
+### 6-1. 홈(/)
+
+- 헤더(월 변경), 필터링(일기 작성 포함), 일기(날짜, 내용, 감정, 수정하기) 리스트 부분으로 나뉨
+
+<br/>
+
+### - 헤더
+
+- 3단계로 개발 진행
+  1. 가운데 월 표시
+  2. 왼쪽 버튼
+  3. 오른쪽 버튼
+
