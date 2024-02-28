@@ -14,6 +14,11 @@ const Home = () => {
   const headText = `${curDate.getFullYear()}년 ${curDate.getMonth() + 1}월`
 
   useEffect(() => {
+    const titleElement = document.getElementsByTagName("title")[0];
+    titleElement.innerHTML = `감정 일기장`;
+  }, []);
+
+  useEffect(() => {
     // curDate 값이 변할 때마다 수행
     // 해당 월의 첫째 날과 마지막 날 사이의 일기 추려내기
 

@@ -16,6 +16,7 @@
 7. [버그](#7-버그)
 8. [LocalStorage](#8-localstorage)
 9. [최적화](#9-최적화)
+10. [배포 준비 & 프로젝트 빌드](#10-배포-준비--프로젝트-빌드)
 
 <br>
 <br>
@@ -1171,5 +1172,155 @@ const handleClickEmote = useCallback((emotion) => {
     ))}
   </div>
 </section>
+...
+```
+
+<br/>
+<br/>
+
+## 10. 배포 준비 & 프로젝트 빌드
+
+### 10-1. 기본 title 태그 수정
+
+- 브라우저의 탭을 보면 기본적으로 React App으로 표시됨
+- 해당 내용은 head 태그 안의 title 태그의 문자가 출력되는 것으로 페이지에 맞게 출력될 필요가 있음
+
+```html
+<!--public/index.html-->
+
+<head>
+  ...
+  <title>감정 일기장</title>
+</head>
+```
+
+<br/>
+
+### 10-2. description 수정
+
+- 앱, 서비스의 설명을 나타내는 description meta 태그 내용 수정
+
+```html
+<!--public/index.html-->
+
+<head>
+  ...
+  <meta 
+    name="description"
+    content="나만의 감정 일기장"
+  />
+  ...
+</head>
+```
+
+<br/>
+
+### 10-3. lang 수정
+
+- 언어도 한국어로 설정
+
+```html
+<html lang="ko">
+...
+</html>
+```
+
+<br/>
+
+### 10-4. 페이지마다 title 변환
+
+- useEffect를 사용하여 페이지 마운트 시, 페이지 이름 변경 진행
+- DOM의 getElementsByTagName 문법으로 title 태그 모두 선택
+- 배열이 반환되기에 첫번째 요소 선택
+- 해당 요소의 innerHTML을 변경해주기
+- 다른 페이지들도 동일한 방법으로 수정
+
+```js
+// src/pages/Diary.js
+
+...
+useEffect(() => {
+  const titleElement = document.getElementsByTagName("title")[0];
+  titleElement.innerHTML = `감정 일기장 - ${id}번 일기`;
+}, []);
+...
+```
+
+<br/>
+
+### 10-5. favicon.ico 변경
+
+- 탭에서 표시되는 아이콘 변경
+- public 폴더 안의 favicon.ico 파일을 동일한 이름의 로고로 교체하기
+
+<br/>
+
+### 10-6. 빌드
+
+- 소스코드의 줄바꿈, 띄워쓰기 등은 모두 용량을 차지하기에 이를 압축하여 배포하기 최적의 상태로 만들기
+- 이를 빌드라고 함
+- package.json 파일의 scripts의 build를 통해 진행할 수 있음
+
+```bash
+$ npm run build
+```
+
+<br/>
+
+### - 로컬에 배포해보기
+
+- serve 명령어를 사용할 수 있도록 serve 패키지 설치
+- serve -s build 명령어를 통해 로컬에 배포
+- 로컬 배포를 하는 이유는 실제 서비스 배포 시, 발생할 수 있는 문제를 사전에 테스트 해보기 위함
+
+```bash
+$ npm install -g serve
+
+$ serve -s build
+```
+
+<br/>
+
+### - 일기 데이터가 없을 경우
+
+- 일기 데이터가 없는 상태에서 새로고침 시, 에러 발생
+- App 컴포넌트에서 diaryList가 빈배열일 경우, truthy가 되는데 이때, 첫번째 요소에 접근하는 코드가 있음
+- 따라서 조건문을 통해 diaryList의 길이가 1 이상일 때, 해당 작업을 수행하도록 수정
+
+```js
+// src/App.js
+
+...
+useEffect(() => {
+  const localData = localStorage.getItem("diary");
+  if (localData) {
+    const diaryList = JSON.parse(localData).sort((a, b) => parseInt(b.id) - parseInt(a.id));
+
+    // 조건문 추가
+    if (diaryList.length >= 1) {
+      dataId.current = parseInt(diaryList[0].id) + 1;
+      dispatch({type: "INIT", data: diaryList});
+    }
+  }
+}, []);
+...
+```
+
+<br/>
+
+### - title 에러
+
+- 일기 작성 후, Home으로 리다이렉션 시, 탭의 title이 일기 작성으로 머물러 있음
+- 일기 삭제 후, Home으로 리다이렉션 시, 탭의 title이 일기 수정으로 머물러 있음
+- 이는 Home 컴포넌트는 useEffect와 DOM 문법을 이용하여 title을 바꿔주는 코드를 작성하지 않아서 오류가 발생함
+
+```js
+// src/pages/Home.js
+
+...
+useEffect(() => {
+  const titleElement = document.getElementsByTagName("title")[0];
+  titleElement.innerHTML = `감정 일기장`;
+}, []);
 ...
 ```
