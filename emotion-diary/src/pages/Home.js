@@ -1,9 +1,10 @@
 import {useContext, useEffect, useState} from "react";
-import {DiaryStateContext} from "../App";
 
 import MyHeader from "../components/MyHeader";
 import MyButton from "../components/MyButton";
 import DiaryList from "../components/DiaryList";
+
+import {DiaryStateContext} from "../App";
 
 const Home = () => {
   const diaryList = useContext(DiaryStateContext);
@@ -20,10 +21,12 @@ const Home = () => {
     if (diaryList.length >= 1) {
       // curDate 월의 첫번째 날
       const firstDay = new Date(
-        curDate.getFullYear(), curDate.getMonth(), 1
+        curDate.getFullYear(),
+        curDate.getMonth(),
+        1
       ).getTime();
 
-      //curDate 월의 마지막 날 -> 중요!! 시, 분, 초 까지 명시
+      // curDate 월의 마지막 날 -> 중요!! 시, 분, 초 까지 명시
       const lastDay = new Date(
         curDate.getFullYear(),
         curDate.getMonth() + 1,
@@ -39,16 +42,14 @@ const Home = () => {
     }
   }, [diaryList, curDate]);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
+  // 다음 달
   const increaseMonth = () => {
     setCurDate(
       new Date(curDate.getFullYear(), curDate.getMonth() + 1, curDate.getDate())
     );
   };
 
+  // 이전 달
   const decreaseMonth = () => {
     setCurDate(
       new Date(curDate.getFullYear(), curDate.getMonth() - 1, curDate.getDate())
@@ -61,7 +62,7 @@ const Home = () => {
                 leftChild={<MyButton text={"<"} onClick={decreaseMonth}/>}
                 rightChild={<MyButton text={">"} onClick={increaseMonth}/>}
       />
-      <DiaryList diaryList={diaryList}/>
+      <DiaryList diaryList={data}/>
     </div>
   );
 };

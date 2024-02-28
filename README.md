@@ -13,8 +13,9 @@
 4. [프로젝트 기초공사 1](#4-프로젝트-기초공사-1)
 5. [프로젝트 기초공사 2](#5-프로젝트-기초공사-2)
 6. [페이지 구현](#6-페이지-구현)
-7. [버그]()
-8. [LocalStorage]()
+7. [버그](#7-버그)
+8. [LocalStorage](#8-localstorage)
+9. [최적화](#9-최적화)
 
 <br>
 <br>
@@ -1055,3 +1056,120 @@ const item2 = localStorage.getItem("item2");
 const item3 = JSON.parse(localStorage.getItem("item3"));
 ```
 <br/>
+<br/>
+
+## 9. 최적화
+
+- 낭비되는 연산을 찾아 최적화 하기
+- 낭비되는 연산찾기
+  - 정적 분석 방법 : 작성한 코드를 살펴보기
+  - 동적 분석 방법 : 도구의 도움을 받아 낭비되는 부분 찾기
+
+### 9-1. 불필요한 리렌더
+
+### - Home의 필터 및 일기 작성
+
+- 월을 이동할 경우, 불필요한 리렌더 발생
+- Home의 월이 바뀌면, 자식 컴포넌트인 DiaryList가 영향을 받고 DiaryList의 자식 컴포넌트인 ControlMenu가 영향을 받음
+- React.memo 사용
+
+```js
+// src/components/DiaryList.js
+
+// ControlMenu 컴포넌트의 값이 바뀔 경우, 리렌더가 되도록 React.memo()로 감싸기
+
+import React, {useState} from "react";
+
+...
+const ControlMenu = React.memo(({value, onChange, optionList}) => {
+  return (
+    <select
+            className="ControlMenu"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+    >
+      {optionList.map((it, idx) => (
+        <option key={idx} value={it.value}>
+          {it.name}
+        </option>
+      ))}
+    </select>
+  )
+});
+...
+```
+
+<br/>
+
+### - Home의 diaryList
+
+- 최신 순, 오래된 순 등의 필터 변화에 따라서 diaryItem들의 위치만 변하면 좋은데 모든 항목이 리렌더링 됨
+- 모든 감정, 좋은 감정, 나쁜 감정으로 필터 할 때, 항목이 바뀌지 않아도 리렌더링이 발생 함
+- 일기 항목이 많아질 수록 사이트의 경험성이 나빠짐
+- DiaryItem에 React.memo() 사용
+
+```js
+// src/components/DiaryItem.js
+
+import React from "react";
+
+...
+export default React.memo(DiaryItem);
+```
+
+<br/>
+
+### Edit의 DiaryEditor
+
+- 오늘의 일기에 일기 내용을 작성하면 onChange가 발생하는 동안, 오늘의 감정의 감정 항목들이 리렌더링이 일어남
+- DiaryEditor 컴포넌트에서 일기 내용이 변하면 자식 컴포넌트인 EmotionItem 컴포넌트에서도 리렌더링이 발생
+- 따라서 EmotionItem 컴포넌트에 React.memo() 사용
+
+```js
+// src/components/EmotionItem.js
+
+import React from "react";
+
+const EmotionItem = ({
+                       emotion_id,
+                       emotion_img,
+                       emotion_descript,
+                       onClick, 
+                       isSelected
+}) => {
+  ...
+};
+
+...
+export default React.memo(EmotionItem);
+```
+
+- 하지만, 계속 리렌더링이 발생하는데 이 이유는 EmotionItem이 Props로 onClick을 전달받는데 해당 onClick으로 전달받는 함수가 useState의 상태 변화 함수, useCallback으로 묶은 함수가 아닌 경우, 컴포넌트 생성 시, 다시 생성되므로 React.memo()를 적용한 강화된 컴포넌트일지라도 리렌더링을 발생시킴
+- 따라서 onClick에 전달하는 함수를 useCallback()으로 묶어주기
+
+```js
+// src/components/DiaryEditor.js
+
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
+
+...
+const handleClickEmote = useCallback((emotion) => {
+  setEmotion(emotion);
+}, []);
+...
+
+<section>
+  <h4>오늘의 감정</h4>
+  <div className="input_box emotion_list_wrapper">
+    {emotionList.map((it) => (
+      <EmotionItem
+              key={it.emotion_id}
+              {...it}
+              onClick={handleClickEmote}
+              isSelected={it.emotion_id === emotion}
+      />
+    ))}
+  </div>
+</section>
+...
+```
