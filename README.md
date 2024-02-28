@@ -12,6 +12,9 @@
 3. [페이지 라우팅 - React Router 응용](#3-페이지-라우팅---react-router-응용)
 4. [프로젝트 기초공사 1](#4-프로젝트-기초공사-1)
 5. [프로젝트 기초공사 2](#5-프로젝트-기초공사-2)
+6. [페이지 구현](#6-페이지-구현)
+7. [버그]()
+8. [LocalStorage]()
 
 <br>
 <br>
@@ -976,3 +979,79 @@ export const DiaryDispatchContext = React.createContext();
   2. 왼쪽 버튼
   3. 오른쪽 버튼
 
+<br/>
+<br/>
+
+## 7. 버그
+
+<br/>
+<br/>
+
+## 8. LocalStorage
+
+- 일기를 작성하고 새로고침 시, 더미 데이터 외에 브라우저에서 생성된 일기 데이터는 사라짐
+- 생성된 일기 데이터가 브라우저 상에서 `휘발성`이기 때문
+- 따라서 데이터 베이스를 이용하여 일기 데이터를 저장해 줄 필요가 있음
+- Web에서 제공하는 `Web Storage API`를 이용할 수 있음
+
+[MDN - Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
+
+<br/>
+
+### 8-1. Web Storage API
+
+- `키/값`의 쌍을 쿠키보다 직관적으로 저장할 수 있는 방법 제공
+- `sessionStorage`와 `localStorage` 방식을 제공함
+
+<br/>
+
+### - sessionStorage
+
+- 페이지 세션이 유지되는 동안(`브라우저가 열린 동안`) 독립적인 공간을 제공함
+- 데이터를 서버로 전송하지 않음
+- 저장공간이 쿠키보다 큼(최대 5MB)
+
+<br/>
+
+### - localStorage
+
+- sessionStorage와 비슷하나 브라우저를 닫았다가 `다시 접속해도 데이터가 남아있음` (데이터가 유지됨)
+- 유효기간 없이 데이터를 저장함
+- 브라우저 캐시 또는 로컬 저장 데이터를 지워야 사라짐
+
+1. 데이터 저장하기 - setItem(key, value)
+
+```js
+// setItem 예시
+
+localStorage.setItem("item1", 10);
+localStorage.setItem("item2", "20");
+localStorage.setItem("item3", JSON.stringify({value: 30}));
+
+// 값으로 숫자, 문자열 저장이 가능하며,
+// 객체는 브라우저가 해석하지 못하기에 JSON.stringify()를 통해 직렬화(객체를 문자열로 변환)를 해주어야 함
+// JavaScript에서 setItem을 지워도 localStorage에 들어간 데이터는 지우기 전까지 유지됨
+```
+
+2. 데이터 가져오기 - getItem(key)
+
+```js
+// getItem 예시
+
+const item1 = localStorage.getItem("item1");
+const item2 = localStorage.getItem("item2");
+const item3 = localStorage.getItem("item3");
+
+// 해당 데이터 확인
+console.log({item1, item2, item3});
+
+// 값을 확인해보면 숫자 타입으로 저장한 값이 문자열로 출력됨
+// 즉, localStorage의 값은 모두 문자열로 변환되어 저장됨
+// 따라서 숫자의 경우, parseInt() 등의 메서드를 통해 숫자로 변환해주어야 함
+// 객체는 JSON.parse()를 통해 객체로 복원해주어야 함
+
+const item1 = parseInt(localStorage.getItem("item1"));
+const item2 = localStorage.getItem("item2");
+const item3 = JSON.parse(localStorage.getItem("item3"));
+```
+<br/>

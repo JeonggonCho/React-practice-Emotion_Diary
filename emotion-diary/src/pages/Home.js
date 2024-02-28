@@ -23,9 +23,14 @@ const Home = () => {
         curDate.getFullYear(), curDate.getMonth(), 1
       ).getTime();
 
-      //curDate 월의 마지막 날
+      //curDate 월의 마지막 날 -> 중요!! 시, 분, 초 까지 명시
       const lastDay = new Date(
-        curDate.getFullYear(), curDate.getMonth() + 1, 0
+        curDate.getFullYear(),
+        curDate.getMonth() + 1,
+        0,
+        23,
+        59,
+        59
       ).getTime();
 
       setData(
