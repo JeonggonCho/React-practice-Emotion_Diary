@@ -18,6 +18,7 @@
 9. [최적화](#9-최적화)
 10. [배포 준비 & 프로젝트 빌드](#10-배포-준비--프로젝트-빌드)
 11. [Firebase 배포](#11-firebase-배포)
+12. [Open Graph](#12-open-graph)
 
 <br>
 <br>
@@ -1501,3 +1502,22 @@ $ firebase deploy
 
 <br/>
 <br/>
+
+## 12. Open Graph
+
+- Open Graph의 정보는 해당 링크를 공유할 때, `썸네일, 사이트 이름, 간단한 설명`을 제공하기 위해 작성함
+- `property="og:<제공할 정보>"` 와 `content="이미지 주소 및 내용"`의 속성을 가진 meta 태그를 추가하기
+
+```html
+<!--Open Graph 예시-->
+
+<!--public/index.html-->
+
+<head>
+  ...
+  <meta property="og:image" content="%PUBLIC_URL%/thumbnail.png" />
+  <meta property="og:site_name" content="감정 일기장" />
+  <meta property="og:description" content="나만의 작은 감정 일기장" />
+  ...
+</head>
+```
