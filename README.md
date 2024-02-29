@@ -17,6 +17,7 @@
 8. [LocalStorage](#8-localstorage)
 9. [최적화](#9-최적화)
 10. [배포 준비 & 프로젝트 빌드](#10-배포-준비--프로젝트-빌드)
+11. [Firebase 배포](#11-firebase-배포)
 
 <br>
 <br>
@@ -1324,3 +1325,179 @@ useEffect(() => {
 }, []);
 ...
 ```
+
+<br/>
+<br/>
+
+## 11. Firebase 배포
+
+- 배포는 서버 유지 비용, 클라우드 대여 비용, 방화벽 등 기본적으로 고려해야 할 요소가 많음
+- Firebase는 구글에서 제공하며 쉽게 배포할 수 있도록 도와주는 배포 솔루션임
+- [Firebase 공식 사이트](https://firebase.google.com/?hl=ko)
+
+<br/>
+
+### 11-1. Firebase 사용해보기
+
+### - 홈페이지
+
+![홈페이지](README_img/firebase_home.png)
+
+- 시작하기 클릭
+
+<br/>
+
+### - 콘솔 페이지
+
+![콘솔 페이지](README_img/firebase_console.png)
+
+- 프로젝트 만들기 클릭
+
+<br/>
+
+### - 프로젝트 만들기 3단계
+
+![프로젝트 이름](README_img/firebase_name.png)
+
+- 프로젝트 이름 지정하기
+- 해당 이름은 여러 사이트를 포괄 할 수 있으며, 도메인 이름이랑 별개임
+
+<br/>
+
+
+![구글 분석](README_img/firebase_analytics.png)
+
+- 트래픽 분석 등 구글에 정보 제공 유무 결정
+
+<br/>
+
+![프로젝트 준비 완료](README_img/firebase_prepare_done.png)
+
+- 프로젝트 생성됨
+
+<br/>
+
+### - 호스팅
+
+![콘솔 페이지](README_img/firebase_console_re.png)
+
+- 프로젝트 콘솔 페이지로 리다이렉션 됨
+
+<br/>
+
+![호스팅 메뉴](README_img/firebase_hosting.png)
+
+- 빌드 메뉴의 호스팅 클릭
+
+<br/>
+
+![호스팅 페이지](README_img/firebase_hosting_page.png)
+
+- 호스팅 페이지로 이동
+- 호스팅 시작하기 클릭
+
+<br/>
+
+![firebase cli](README_img/firebase_cli.png)
+
+- Firebase CLI 설치하기
+
+<br/>
+
+![firebase login init](README_img/firebase_login_init.png)
+
+- 루트 디렉토리에서 firebase login 명령어 수행
+
+<br/>
+
+![허용](README_img/firebase_allow.png)
+
+- 오류 수집 여부 결정
+
+<br/>
+
+![로그인 완료](README_img/firebase_login_done.png)
+
+- 로그인 완료
+
+<br/>
+<br/>
+
+### - 배포 세팅
+
+![호스팅으로 세팅](README_img/firebase_setting1.png)
+
+- 호스팅으로 배포 진행
+
+<br/>
+
+![옵션](README_img/firebase_setting2.png)
+
+- 현재 만들어진 프로젝트, 새 프로젝트 등 옵션 선택
+
+<br/>
+
+![프로젝트 선택](README_img/firebase_setting3.png)
+
+- 해당 디렉토리를 배포할 Firebase 프로젝트 선택
+
+<br/>
+
+![여러 세팅 선택](README_img/firebase_setting4.png)
+
+- 호스팅에 관련된 여러 세팅 설정하기
+
+<br/>
+
+![firebase 파일 생성](README_img/firebase_new_files.png)
+
+- 세팅을 완료 시, `.firebaserc`와 `firebase.json` 파일이 생성됨
+
+<br/>
+
+![배포](README_img/firebase_deploy.png)
+
+- 바로 배포할 수 있지만 콘솔로 이동
+
+<br/>
+
+![도메인 추가](README_img/firebase_add_new_site.png)
+
+- 콘솔 페이지 아래의 다른 사이트 추가 클릭
+
+<br/>
+
+![도메인 이름 작성](README_img/firebase_write_domain.png)
+
+- 사용할 도메인 이름 작성
+
+<br/>
+
+![도메인 이름 파일에 작성](README_img/firebase_add_domain.png)
+
+- firebase.json 파일에서 hosting 옵션에 `"site": "작성한 도메인"` 추가하기
+
+<br/>
+
+```bash
+$ npm run build
+```
+
+- 빌드 다시 진행
+
+<br/>
+
+```bash
+$ firebase deploy
+```
+
+- 배포 진행
+
+<br/>
+
+![완료](README_img/firebase_done.png)
+
+- 배포 완료됨
+
+<br/>
+<br/>
